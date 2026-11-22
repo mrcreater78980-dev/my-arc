@@ -102,7 +102,9 @@ class _AppShellState extends State<AppShell> {
                     PageHeader(
                       eyebrow: _page == AppPage.home ? 'ТАНЫ ӨСӨЛТИЙН ОРОН ЗАЙ' : 'ӨДӨР БҮР, НЭГ АЛХАМ УРАГШ',
                       title: nav.title,
-                      subtitle: _subtitles[_page]!,
+                      subtitle: _page == AppPage.home
+                          ? 'Сайн уу, ${AppScope.of(context).profileName}!'
+                          : _subtitles[_page]!,
                       onSettings: () => openSettings(context),
                     ),
                     _pageBody(),

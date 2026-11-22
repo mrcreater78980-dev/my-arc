@@ -1,33 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/components.dart';
 import '../widgets/layout.dart';
 import 'navigation.dart';
 
-class _SettingRow {
-  final String id;
-  final String title;
-  final IconData icon;
-  final String color;
-  final String? value;
-  const _SettingRow(this.id, this.title, this.icon, this.color, [this.value]);
-}
-
-const _rows = [
-  _SettingRow('profile', 'Профайл', Icons.person_outline_rounded, 'blue', 'Бат'),
-  _SettingRow('reminders', 'Сануулга', Icons.notifications_none_rounded, 'violet', '20:00'),
-  _SettingRow('language', 'Хэл', Icons.language_rounded, 'teal', 'Монгол'),
-  _SettingRow('export', 'Өгөгдөл хадгалах', Icons.download_rounded, 'blue'),
-  _SettingRow('help', 'Тусламж', Icons.help_outline_rounded, 'violet'),
-  _SettingRow('logout', 'Гарах', Icons.logout_rounded, 'neutral'),
-];
-
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  Future<void> _editProfile(BuildContext context, AppState state) async {
+    final controller = TextEditingController(text: state.profileName);
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Нэрээ засах'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          maxLength: 32,
+          decoration: const InputDecoration(labelText: 'Таны нэр'),
+          onSubmitted: (value) => Navigator.pop(context, value),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Болих')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Хадгалах')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (name != null) state.setProfileName(name);
+  }
+
+  Future<void> _export(BuildContext context, AppState state) async {
+    await Clipboard.setData(ClipboardData(text: state.exportJson()));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Өгөгдлийг JSON хэлбэрээр хууллаа.')),
+    );
+  }
+
+  void _showHelp(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('MY ARC-ийн тухай'),
+        content: const Text(
+          'Өдөр тутмын ажил, дадал, суралцах ахицаа хөтлөөрэй. '
+          'Өөрчлөлтүүд энэ төхөөрөмж дээр хадгалагдана. '
+          'Өгөгдөл хадгалах хэсгээс нөөцөө JSON хэлбэрээр хуулж болно.',
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Ойлголоо'))],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final state = AppScope.of(context);
+    final rows = [
+      _SettingRow('profile', 'Профайл', Icons.person_outline_rounded, 'blue', state.profileName),
+      const _SettingRow('export', 'Өгөгдөл хуулах', Icons.download_rounded, 'teal'),
+      const _SettingRow('help', 'Тусламж', Icons.help_outline_rounded, 'violet'),
+    ];
+
     return DetailScaffold(
       children: [
         const BackHeader(title: 'Тохиргоо'),
@@ -39,24 +77,36 @@ class SettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Column(
             children: [
-              for (var i = 0; i < _rows.length; i++) ...[
+              for (var i = 0; i < rows.length; i++) ...[
                 if (i > 0) const Divider(height: 1, indent: 66, color: Color(0xFFE8EDF8)),
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                  leading: IconBadge(icon: _rows[i].icon, color: _rows[i].color, size: 18),
-                  title: Text(_rows[i].title,
+                  leading: IconBadge(icon: rows[i].icon, color: rows[i].color, size: 18),
+                  title: Text(rows[i].title,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (_rows[i].value != null)
-                        Text(_rows[i].value!,
+                      if (rows[i].value != null)
+                        Text(rows[i].value!,
                             style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.muted)),
                       const SizedBox(width: 4),
                       const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.faint),
                     ],
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    switch (rows[i].id) {
+                      case 'profile':
+                        _editProfile(context, state);
+                        break;
+                      case 'export':
+                        _export(context, state);
+                        break;
+                      case 'help':
+                        _showHelp(context);
+                        break;
+                    }
+                  },
                 ),
               ],
             ],
@@ -79,4 +129,13 @@ class SettingsScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+class _SettingRow {
+  final String id;
+  final String title;
+  final IconData icon;
+  final String color;
+  final String? value;
+  const _SettingRow(this.id, this.title, this.icon, this.color, [this.value]);
 }

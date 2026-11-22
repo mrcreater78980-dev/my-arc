@@ -4,8 +4,10 @@ import 'app_shell.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
-void main() {
-  runApp(MyArcApp(state: AppState()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final state = await AppState.load();
+  runApp(MyArcApp(state: state));
 }
 
 class MyArcApp extends StatelessWidget {

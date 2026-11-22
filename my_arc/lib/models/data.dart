@@ -22,6 +22,22 @@ class Task {
 
   Task copyWith({bool? done}) =>
       Task(id: id, title: title, due: due, time: time, done: done ?? this.done);
+
+  Map<String, Object?> toJson() => {
+        'id': id,
+        'title': title,
+        'due': due,
+        'time': time,
+        'done': done,
+      };
+
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+        id: json['id'] as int,
+        title: json['title'] as String,
+        due: json['due'] as String,
+        time: json['time'] as String?,
+        done: json['done'] as bool,
+      );
 }
 
 class Habit {
@@ -39,6 +55,20 @@ class Habit {
 
   Habit copyWith({bool? done}) =>
       Habit(id: id, title: title, streak: streak, done: done ?? this.done);
+
+  Map<String, Object?> toJson() => {
+        'id': id,
+        'title': title,
+        'streak': streak,
+        'done': done,
+      };
+
+  factory Habit.fromJson(Map<String, dynamic> json) => Habit(
+        id: json['id'] as int,
+        title: json['title'] as String,
+        streak: json['streak'] as int,
+        done: json['done'] as bool,
+      );
 }
 
 class Skill {
@@ -74,6 +104,30 @@ class Skill {
         color: color,
         icon: icon,
         bars: bars,
+      );
+
+  Map<String, Object?> toJson() => {
+        'id': id,
+        'title': title,
+        'technology': technology,
+        'progress': progress,
+        'level': level,
+        'change': change,
+        'color': color,
+        'icon': icon,
+        'bars': bars,
+      };
+
+  factory Skill.fromJson(Map<String, dynamic> json) => Skill(
+        id: json['id'] as int,
+        title: json['title'] as String,
+        technology: json['technology'] as String?,
+        progress: json['progress'] as int,
+        level: json['level'] as int,
+        change: json['change'] as int,
+        color: json['color'] as String,
+        icon: json['icon'] as String,
+        bars: (json['bars'] as List<dynamic>).cast<int>(),
       );
 }
 
