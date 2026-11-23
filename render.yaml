@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: my-arc
+    runtime: static
+    branch: main
+    rootDir: my_arc
+    buildCommand: bash render-build.sh
+    staticPublishPath: build/web
+    autoDeployTrigger: commit

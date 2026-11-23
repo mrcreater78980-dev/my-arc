@@ -17,6 +17,14 @@ Chrome дээр ажиллуулах бол:
 flutter run -d chrome
 ```
 
+## Render дээр байрлуулах
+
+Render дээр шинэ Static Site үүсгэхдээ энэ товчийг ашиглаарай. Тохиргоог repository-ийн `render.yaml`-аас уншина.
+
+[Render дээр байрлуулах](https://render.com/deploy?repo=https://github.com/mrcreater78980-dev/my-arc)
+
+Эхний удаа Render аккаунтаа GitHub-тэй холбоод `Apply`-г дарна. Render таны аккаунтад `my-arc` нэртэй статик сайт үүсгээд Flutter веб хувилбарыг build хийнэ.
+
 ## Ашиглах
 
 - Нүүр хэсгээс өнөөдрийн ажлууд, дадал, суралцах чиглэлээ харна.
